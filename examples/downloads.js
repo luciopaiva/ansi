@@ -19,15 +19,19 @@ function update() {
             lineNum = index + 1;
 
         while (pg > 0) {
-            bar += '\u2588';
-            pg -= 1;
+            if (pg > 1) {
+                bar += '\u2588';
+            } else {
+                bar += '\u2590';
+            }
+            pg -= 2;
         }
 
         ansi.move(lineNum)
             .clearLine()
             .print('> %s', download.file)
-            .col(-102).print('[')
-            .col(-101).print(bar)
+            .col(-52).print('[')
+            .col(-51).print(bar)
             .col(-1).print(']');
             //.col(20).print(download.progress.toFixed(1));
     });
