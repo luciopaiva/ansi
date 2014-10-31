@@ -2,33 +2,111 @@
 
 "use strict";
 
-function update() {
-    clear();
-    moveToCenter();
-    printSize();
+var
+    util = require('util'),
+    out = process.stdout;
+
+var
+    CSI = '\x1B[';
+
+function esc(param) {
+    return CSI + param;
 }
 
-function clear() {
-    process.stdout.write('\x1b[2J');
+function Ansi() {
+
+    if (!out.isTTY) {
+        throw new Error('stdout is not TTY');
+    }
 }
 
-function moveToCenter() {
-    var
-        x = Math.round(process.stdout.rows / 2),
-        y = Math.round(process.stdout.columns / 2);
+Ansi.prototype = {
 
-    process.stdout.write('\x1b[' + x + ';' + y + 'H');
-}
+    row: function (num) {
 
-function printSize() {
-    process.stdout.write(Math.round(process.stdout.rows / 2) + 'x' + Math.round(process.stdout.columns / 2));
-}
+        return this.move(num);
+    },
 
-process.stdout.on('resize', function() {
-    update();
-});
+    col: function (num) {
+        var
+            cmd;
 
-// keep process alive http://stackoverflow.com/questions/23622051
-setInterval(function(){}, Math.POSITIVE_INFINITY);
+        if ((typeof num == 'number') && (num != 0)) {
 
-update();
+            if (num < 0) {
+                num = out.columns + (num + 1);
+            }
+
+            cmd = util.format('%dG', num);
+
+            out.write(esc(cmd));
+
+        } else {
+
+            throw new Error('Invalid column ' + num);
+        }
+
+        return this;
+    },
+
+    move: function (row, col) {
+        var
+            cmd;
+
+        if (typeof row != 'number') {
+            throw new Error('Invalid row');
+        }
+
+        if (typeof col != 'number') {
+
+            if (typeof col != 'undefined') {
+                throw new Error('Invalid column');
+            }
+
+            col = 1;
+        }
+
+        cmd = util.format('%d;%df', row, col);
+
+        out.write(esc(cmd));
+
+        return this;
+    },
+
+    print: function (params) {
+        var
+            str = util.format.apply(null, arguments);
+
+        out.write(str);
+
+        return this;
+    },
+
+    clearLine: function () {
+
+        out.write(esc('2K'));
+
+        return this;
+    },
+
+    clear: function (lineNum) {
+
+        if (typeof lineNum == 'number') {
+
+            this.move(lineNum);
+            out.write(esc('2K'));
+
+        } else if (typeof lineNum == 'undefined') {
+
+            out.write(esc('2J'));
+
+        } else {
+
+            throw new Error('Invalid argument ' + lineNum);
+        }
+
+        return this;
+    }
+};
+
+module.exports = new Ansi();
