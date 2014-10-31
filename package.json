@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/luciopaiva/ansi/issues"
   },
-  "homepage": "https://github.com/luciopaiva/ansi"
+  "homepage": "https://github.com/luciopaiva/ansi",
+  "dependencies": {
+    "chalk": "^0.5.1"
+  }
 }

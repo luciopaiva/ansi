@@ -1,6 +1,7 @@
 
 var
     ansi = require('../ansi'),
+    chalk = require('chalk'),
     downloads;
 
 downloads = [
@@ -29,9 +30,9 @@ function update() {
 
         ansi.move(lineNum)
             .clearLine()
-            .print('> %s', download.file)
+            .print('> %s', chalk.yellow(download.file))
             .col(-52).print('[')
-            .col(-51).print(bar)
+            .col(-51).print(chalk.green(bar))
             .col(-1).print(']');
             //.col(20).print(download.progress.toFixed(1));
     });
