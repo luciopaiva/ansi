@@ -31,10 +31,10 @@ function update() {
         ansi.move(lineNum)
             .clearLine()
             .print('> %s', chalk.yellow(download.file))
+            .col(-59).print(download.progress.toFixed(1) + '%')
             .col(-52).print('[')
             .col(-51).print(chalk.green(bar))
             .col(-1).print(']');
-            //.col(20).print(download.progress.toFixed(1));
     });
 }
 
